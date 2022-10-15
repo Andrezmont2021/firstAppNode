@@ -276,41 +276,31 @@ export const partialUpdateOfProductAndNotify = async (
     const { clientEmail, data } = req.body;
     const { name, year, price, description, user }: Product = data;
     try {
-        if (
-            Types.ObjectId.isValid(productId) &&
-            Types.ObjectId.isValid(user.toString())
-        ) {
-            const productFound = await products
-                .findByIdAndUpdate(productId, {
-                    name,
-                    year,
-                    price,
-                    description,
-                    user,
-                })
-                .exec();
+        const productFound = await products
+            .findByIdAndUpdate(productId, {
+                name,
+                year,
+                price,
+                description,
+                user,
+            })
+            .exec();
 
-            if (productFound) {
-                const productToBeReturned = {
-                    id: productId,
-                    name: name || productFound.name,
-                    year: year || productFound.year,
-                    price: price || productFound.price,
-                    description: description || productFound.description,
-                    user: user || productFound.user,
-                };
-                res.status(200).send({
-                    data: productToBeReturned,
-                    message: `Email sent successfully to ${clientEmail}`,
-                });
-            } else {
-                res.status(404).send({});
-            }
+        if (productFound) {
+            const productToBeReturned = {
+                id: productId,
+                name: name || productFound.name,
+                year: year || productFound.year,
+                price: price || productFound.price,
+                description: description || productFound.description,
+                user: user || productFound.user,
+            };
+            res.status(200).send({
+                data: productToBeReturned,
+                message: `Email sent successfully to ${clientEmail}`,
+            });
         } else {
-            // id is invalid
-            res.status(400).send(
-                'Invalid product id or user id when try to partial update a product and notify'
-            );
+            res.status(404).send({});
         }
     } catch (e) {
         handleCatchedErrors({
@@ -337,20 +327,13 @@ export const deleteProduct = async (
 ): Promise<void> => {
     const id: string = req.params.id;
     try {
-        if (Types.ObjectId.isValid(id)) {
-            const productFound: Product | null = await products
-                .findByIdAndDelete(id)
-                .exec();
-            if (productFound) {
-                res.status(204).send();
-            } else {
-                res.status(404).send({});
-            }
+        const productFound: Product | null = await products
+            .findByIdAndDelete(id)
+            .exec();
+        if (productFound) {
+            res.status(204).send();
         } else {
-            // id is invalid
-            res.status(400).send(
-                'Invalid product id when try to delete a product'
-            );
+            res.status(404).send({});
         }
     } catch (e) {
         handleCatchedErrors({
