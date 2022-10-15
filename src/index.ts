@@ -1,6 +1,6 @@
 import express, { Application, Request, Response } from 'express'
 import * as dotenv from 'dotenv'
-import { json } from 'body-parser'
+import cors from 'cors';
 
 import apiV1 from './routes/v1'
 import connectToMongoDB from './db/connection'
@@ -11,7 +11,12 @@ const PORT = process.env.PORT
 const app: Application = express()
 
 // parse application/json
-app.use(json())
+app.use(express.json())
+
+// Include cors
+app.use(cors({
+    origin: ['http://localhost']
+}))
 
 // Set the app to the routes V1
 apiV1(app)

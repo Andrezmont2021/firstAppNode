@@ -3,9 +3,10 @@ import * as productController from '../../controllers/v1/product-controller';
 import { verifyAuthentication } from '../../middlewares/auth-middleware';
 import { processValidators } from '../../middlewares/validator-handler-middleware';
 import {
-    validateCreateProductData
+    validateCreateProductData,
+    validateObjectId,
+    validateUpdateProductDataAndNotify,
 } from '../../middlewares/validators/v1/product-validator';
-
 
 const router = Router();
 
@@ -15,7 +16,13 @@ router.get(
     verifyAuthentication,
     productController.getProductsByUser
 );
-router.get('/:id', verifyAuthentication, productController.getProductById);
+router.get(
+    '/:id',
+    verifyAuthentication,
+    validateObjectId,
+    processValidators,
+    productController.getProductById
+);
 router.post(
     '/create',
     verifyAuthentication,
@@ -32,11 +39,15 @@ router.patch(
 router.post(
     '/:id/notify-client',
     verifyAuthentication,
+    validateUpdateProductDataAndNotify,
+    processValidators,
     productController.partialUpdateOfProductAndNotify
 );
 router.delete(
     '/:id/remove-product',
     verifyAuthentication,
+    validateObjectId,
+    processValidators,
     productController.deleteProduct
 );
 
